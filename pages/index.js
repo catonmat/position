@@ -67,23 +67,32 @@ export default function Home() {
               </FormLabel>
               <FormGroup>
                 {sectorsArray.map((v, i) => {
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        name={sectorsArray[i].sector}
-                        label={sectorsArray[i].label}
-                        checked={sectorsArray[i].checked}
-                        onChange={e => setSectors(sectorsArray => {
-                          let newSectorsArray = []
-                          sectorsArray.forEach((value, index) => {
-                            newSectorsArray[index] = sectorsArray[index]
-                            if (index == i) { newSectorsArray[index].checked = e.target.checked }
-                          })
-                          return newSectorsArray
-                        })}
-                      />
-                    }
-                  />
+                  { 
+                    /* Just missing the `return` keyword here! It's very easy to miss it. `.map` will not automatically return 
+                    if you use the `{}` to encapsulate your code block. It will only automtically return if you use `()` 
+                    to encapsulate your code block.  
+                  */}
+                  return (
+                    <FormControlLabel
+                      label={sectorsArray[i].sector}
+                      control={
+                        <Checkbox
+                          key={i}
+                          name={sectorsArray[i].sector}
+                          value={sectorsArray[i].sector}
+                          checked={sectorsArray[i].checked}
+                          onChange={e => setSectors(sectorsArray => {
+                            let newSectorsArray = []
+                            sectorsArray.forEach((value, index) => {
+                              newSectorsArray[index] = sectorsArray[index]
+                              if (index == i) { newSectorsArray[index].checked = e.target.checked }
+                            })
+                            return newSectorsArray
+                          })}
+                        />
+                      }
+                    />
+                  )
                 })}
               </FormGroup>
               <FormHelperText>Pick one or more.</FormHelperText>
