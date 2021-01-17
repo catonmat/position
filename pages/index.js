@@ -1,65 +1,110 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { Container, Checkbox, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText } from '@material-ui/core'
+import { useState } from 'react'
+import { riskLevelMarks, investmentPeriodMarks, sectors } from './data.js'
+import { CustomSlider } from '../components/CustomSlider.js'
+import { CustomButton } from '../components/CustomButton.js'
 
 export default function Home() {
+
+  //state variables:
+  const [step, setStep] = useState(1)
+  const [riskLevel, setRiskLevel] = useState(riskLevelMarks[0].value)
+  const [investmentPeriod, setInvestmentPeriod] = useState(investmentPeriodMarks[1].value)
+  const [sectorsArray, setSectors] = useState(sectors.map(obj => ({ ...obj, checked: false })))
+
+  //proceed to next step:
+  const nextStep = () => {
+    setStep(step + 1)
+  }
+
+  //go back to previous step:
+  const prevStep = () => {
+    setStep(step - 1)
+  }
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Position or Ban!</title>
+        {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Position or Ban!
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
+          Find YOLO opportunities based on your risk level, time preference, and sector interest.
         </p>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+        <Container maxWidth="sm">
+          <form>
+            {/* ***** Step 1 ***** */}
+            <CustomSlider
+              title='What is your risk tolerance level?'
+              textTop='Risk tolerance determines what % of your money to expose.'
+              marks={riskLevelMarks}
+              value={riskLevel}
+              handleChange={(e, newValue) => {
+                setRiskLevel(newValue)
+              }}
+            />
+            <CustomSlider
+              title='How long are you looking to stay invested in your position?'
+              textTop='Your time preference determines what expiry dates to pick.'
+              marks={investmentPeriodMarks}
+              value={investmentPeriod}
+              handleChange={(e, newValue) => {
+                setInvestmentPeriod(newValue)
+              }}
+            />
+            <FormControl component="fieldset">
+              <FormLabel component="legend">
+                Which sectors are you interested in investing?
+              </FormLabel>
+              <FormGroup>
+                {sectorsArray.map((v, i) => {
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name={sectorsArray[i].sector}
+                        label={sectorsArray[i].label}
+                        checked={sectorsArray[i].checked}
+                        onChange={e => setSectors(sectorsArray => {
+                          let newSectorsArray = []
+                          sectorsArray.forEach((value, index) => {
+                            newSectorsArray[index] = sectorsArray[index]
+                            if (index == i) { newSectorsArray[index].checked = e.target.checked }
+                          })
+                          return newSectorsArray
+                        })}
+                      />
+                    }
+                  />
+                })}
+              </FormGroup>
+              <FormHelperText>Pick one or more.</FormHelperText>
+            </FormControl>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+            <CustomButton />
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+            {/* ***** Step 2 ***** */}
+
+
+
+          </form>
+        </Container>
+
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
+        Disclaimer: Not investment advice. The information on this site is for entertainment purpose only.
       </footer>
-    </div>
+
+    </>
   )
 }
